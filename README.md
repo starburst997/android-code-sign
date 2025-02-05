@@ -122,4 +122,24 @@ Look for `Successfully established connection to Google Play Store`.
 
 ## Generate an upload key and keystore
 
-Blablabalba
+You can generate your key using [Android Studio](https://developer.android.com/studio/publish/app-signing#generate-key), but here's how you can do it on the command line using [keytool](https://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html) (available in your JDK's bin folder):
+
+```sh
+keytool -genkey -v -keystore .keystore -alias android -keyalg RSA -keysize 2048 -validity 10000
+```
+
+You'll be prompt to add some information, keep notes of the **password** (use the same for both) and the **alias**.
+
+For ease of use afterward, we'll save the keystore as **base64** and save it as a secret in our repository.
+
+```sh
+base64 .keystore
+```
+
+I've also created a Github Action that you can run in this repository called: **Generate .keystore**. It will also generate the base64 version.
+
+<br/>
+
+## Save secrets
+
+Blablabla
