@@ -48,6 +48,10 @@ You can follow the [instructions here](https://support.google.com/googleplay/and
 
 ## Create a Google Play Service Account
 
+To programmatically access the [Google Play Console](https://play.google.com/console/?hl=en), you will need a dedicated **Google Play Service** account with API access.
+
+The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highlight the steps but here's a summary:
+
 <table align="center"><tr><td>
 <a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/google-service-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/google-service-01.png" alt="Create Google Project" title="Create Google Project"/></a><p align="center">1</p>
 </td><td>
@@ -58,13 +62,9 @@ You can follow the [instructions here](https://support.google.com/googleplay/and
 <a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/google-service-04.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/google-service-04.png" alt="Create a new Service Account" title="Create a new Service Account" /></a><p align="center">4</p>
 </td></tr></table>
 
-To programmatically access the [Google Play Console](https://play.google.com/console/?hl=en), you will need a dedicated **Google Play Service** account with API access.
-
-The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highlight the steps but here's a summary:
-
 1. Create a [Google Cloud Project](https://console.cloud.google.com/projectcreate) (or use an existing one). Give it a name and click create ([more info](https://cloud.google.com/resource-manager/docs/creating-managing-projects)).
 
-2. Enable the [Google Play Developer API](https://console.developers.google.com/apis/api/androidpublisher.googleapis.com/?hl=en) by clicking the **ENABLE API** button for your newly created project.
+2. Enable the [Google Play Developer API](https://console.developers.google.com/apis/api/androidpublisher.googleapis.com/?hl=en) by clicking the **Enable API** button for your newly created project.
 
 3. Open [Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts?hl=en) on Google Cloud and select your project.
 
@@ -80,9 +80,9 @@ The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highli
 <a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/google-service-08.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/google-service-08.png" alt="Save JSON key" title="Save JSON key" /></a><p align="center">8</p>
 </td></tr></table>
 
-5. Give it a name and ID, copy the resulting **Email address** (we will need it later). Click on **Done** *NOT* "Create and Continue".
+5. Give it a name and ID, copy the resulting **Email address** (we will need it later). Click on **Done**, *NOT* ~Create and Continue~.
 
-6. Click on the vertical **three-dot icon** of your newly created account, and select **Manage keys**.
+6. Click on the vertical **three-dot icon** (under **Actions**) of your newly created account, and select **Manage keys**.
 
 7. Click on **Add key** and select **Create new key**.
 
