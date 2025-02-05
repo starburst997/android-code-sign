@@ -102,7 +102,7 @@ The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highli
 
 1. Open the [Google Play Console](https://play.google.com/console/?hl=en) and select **Users and Permissions**. Click **Invite new users**.
 
-2. Paste the **email address** of the **Service Account** you saved for later (*xxxx@yyyy.iam.gserviceaccount.com*).
+2. Paste the **email address** of the **Service Account** you saved for later (`xxxx@yyyy.iam.gserviceaccount.com`).
 
 3. Choose the permissions: **Admin (all permissions)**. Click on **Invite User**.
 
@@ -116,7 +116,9 @@ We can now test that the connection is valid using your **JSON file** by running
 bundle exec fastlane run validate_play_store_json_key json_key:/path/to/your/downloaded/file.json
 ```
 
-Look for `Successfully established connection to Google Play Store.`.
+Look for `Successfully established connection to Google Play Store`.
+
+<br/>
 
 ## Generate an upload key and keystore
 
