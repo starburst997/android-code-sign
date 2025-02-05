@@ -2,6 +2,8 @@
 
 Sample project to publish an Android App to the Play Store using Github Action
 
+<br/>
+
 ## Create Github Repository
 
 Create a Github Repository for your project. Feel free to use [this repository](https://github.com/starburst997/android-publish) as a template since it already contains all the workflows files.
