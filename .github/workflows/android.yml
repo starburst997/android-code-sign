@@ -3,7 +3,7 @@ name: Build Android
 env:
   path: android
   module: app
-  bundle_id: jd.boiv.in.test2
+  bundle_id: jd.boiv.in.test
 
 on:
   workflow_dispatch:
@@ -30,9 +30,7 @@ jobs:
       - name: Change bundle id
         working-directory: ${{ env.path }}/${{ env.module }}
         run: |
-          echo "Bundle: ${{ env.bundle_id }}"
           sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ env.bundle_id }}\"/" build.gradle.kts
-          cat build.gradle.kts
 
       #- name: Build APK
       #  working-directory: ${{ env.path }}
