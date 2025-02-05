@@ -3,6 +3,7 @@ name: Build Android
 env:
   path: android
   module: app
+  bundle_id: jd.boiv.in.test2
 
 on:
   workflow_dispatch:
@@ -25,9 +26,13 @@ jobs:
         working-directory: ${{ env.path }}
         run: chmod +x ./gradlew
 
-      #- name: Build gradle project
-      #  working-directory: ${{ env.path }}
-      #  run: ./gradlew build
+      # Change bundle id for easy testing of this workflow when used as a template
+      - name: Change bundle id
+        working-directory: ${{ env.path }}/${{ env.module }}
+        run: |
+          echo "Bundle: ${{ env.bundle_id }}"
+          sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ env.bundle_id }}\"/" build.gradle.kts
+          cat build.gradle.kts
 
       #- name: Build APK
       #  working-directory: ${{ env.path }}
@@ -37,8 +42,13 @@ jobs:
         working-directory: ${{ env.path }}
         run: ./gradlew bundleRelease
 
+      - name: Rename files
+        run: |
+          mkdir build
+          find "${{ env.path }}/${{ env.module }}/build/outputs/bundle/release" -name '*.aab' -exec mv '{}' build/android.aab \;
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-android
-          path: ${{ env.path }}/${{ env.module }}/build/outputs/bundle/release/
+          path: build
