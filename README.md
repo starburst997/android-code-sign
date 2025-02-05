@@ -46,9 +46,9 @@ You can follow the [instructions here](https://support.google.com/googleplay/and
 
 <br/>
 
-## Create a Google Play Service Account
+## Create a Google Service Account
 
-To programmatically access the [Google Play Console](https://play.google.com/console/?hl=en), you will need a dedicated **Google Play Service** account with API access.
+To programmatically access the [Google Play Console](https://play.google.com/console/?hl=en), you will need a dedicated **Google Service** account with API access.
 
 The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highlight the steps but here's a summary:
 
@@ -87,3 +87,37 @@ The [fastlane documentation](https://docs.fastlane.tools/actions/supply/) highli
 7. Click on **Add key** and select **Create new key**.
 
 8. Make sure to select **JSON**, click **Create** and save the file on your computer.
+
+<br/>
+
+## Invite Service Account to Google Play Console
+
+<table align="center"><tr><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/invite-service-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/invite-service-01.png" alt="Invite new user" title="Invite new user"/></a><p align="center">1</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/invite-service-02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/invite-service-02.png" alt="Paste email address" title="Paste email address"/></a><p align="center">2</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/invite-service-03.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/invite-service-03.png" alt="Choose permissions" title="Choose permissions" /></a><p align="center">3</p>
+</td></tr></table>
+
+1. Open the [Google Play Console](https://play.google.com/console/?hl=en) and select **Users and Permissions**. Click **Invite new users**.
+
+2. Paste the **email address** of the **Service Account** you saved for later (*xxxx@yyyy.iam.gserviceaccount.com*).
+
+3. Choose the permissions: **Admin (all permissions)**. Click on **Invite User**.
+
+<br/>
+
+## Test your JSON file
+
+We can now test that the connection is valid using your **JSON file** by running this command:
+
+```sh
+bundle exec fastlane run validate_play_store_json_key json_key:/path/to/your/downloaded/file.json
+```
+
+Look for `Successfully established connection to Google Play Store.`.
+
+## Generate an upload key and keystore
+
+Blablabalba
