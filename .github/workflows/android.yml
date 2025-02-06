@@ -111,10 +111,9 @@ jobs:
           rm bundletool.jar
 
       - name: Cleanup
-        continue-on-error: true
         working-directory: build
         run: |
-          rm .keystore
+          rm -f .keystore
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
