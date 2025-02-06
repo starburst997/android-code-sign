@@ -1,13 +1,29 @@
 name: Build Android
 
 env:
-  path: android
-  module: app
   ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
   ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      path:
+        required: true
+        default: 'android'
+        type: string
+      module:
+        required: true
+        default: 'app'
+        type: string
+      java-version:
+        default: '21'
+        type: string
+      distribution:
+        default: 'jetbrains'
+        type: string
+      apk-only:
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -20,33 +36,42 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: 'jetbrains'
-          java-version: '21'
+          distribution: '${{ inputs.distribution }}'
+          java-version: '${{ inputs.java-version }}'
 
       - name: Change wrapper permissions
-        working-directory: ${{ env.path }}
+        working-directory: ${{ inputs.path }}
         run: chmod +x ./gradlew
 
-      # Change bundle id for easy testing of this workflow when used as a template
-      - name: Change bundle id
+      # Change package name for easy testing of this workflow when used as a template
+      - name: Change package name
         if: ${{ env.ANDROID_PACKAGE_NAME != '' }}
         continue-on-error: true
-        working-directory: ${{ env.path }}/${{ env.module }}
+        working-directory: ${{ inputs.path }}/${{ inputs.module }}
         run: |
           sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ secrets.ANDROID_PACKAGE_NAME }}\"/" build.gradle.kts
 
-      #- name: Build APK
-      #  working-directory: ${{ env.path }}
-      #  run: ./gradlew assembleRelease
+      - name: Build APK
+        if: ${{ inputs.apk-only }}
+        working-directory: ${{ inputs.path }}
+        run: ./gradlew assembleRelease
 
-      - name: Build AAB
-        working-directory: ${{ env.path }}
-        run: ./gradlew bundleRelease
-      
-      - name: Rename files
+      - name: Rename files APK
+        if: ${{ inputs.apk-only }}
         run: |
           mkdir build
-          find "${{ env.path }}/${{ env.module }}/build/outputs/bundle/release" -name '*.aab' -exec mv '{}' build/android.aab \;
+          find "${{ inputs.path }}/${{ inputs.module }}/build/outputs/apk/release" -name '*.apk' -exec mv '{}' build/android.apk \;
+
+      - name: Build AAB
+        if: ${{ !inputs.apk-only }}
+        working-directory: ${{ inputs.path }}
+        run: ./gradlew bundleRelease
+      
+      - name: Rename files AAB
+        if: ${{ !inputs.apk-only }}
+        run: |
+          mkdir build
+          find "${{ inputs.path }}/${{ inputs.module }}/build/outputs/bundle/release" -name '*.aab' -exec mv '{}' build/android.aab \;
 
       - name: Save .keystore
         if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
@@ -68,14 +93,21 @@ jobs:
           mv keystore.jks .keystore
 
       - name: Unsign AAB
-        if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' && !inputs.apk-only }}
         continue-on-error: true
         working-directory: build
         run: |
           zip -d android.aab META-INF/\*
+          
+      - name: Unsign APK
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' && inputs.apk-only }}
+        continue-on-error: true
+        working-directory: build
+        run: |
+          zip -d android.apk META-INF/\*
 
       - name: Sign AAB
-        if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' && !inputs.apk-only }}
         working-directory: build
         run: |
           jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
@@ -84,7 +116,7 @@ jobs:
 
       # Download bundletool to generate a .APK from the .AAB for external distribution
       - name: Generate .APK (signed)
-        if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' && !inputs.apk-only }}
         working-directory: build
         run: |
           json=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest)
@@ -112,7 +144,7 @@ jobs:
           "android.apk" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
 
       - name: Generate .APK (unsigned)
-        if: ${{ env.ANDROID_KEYSTORE_PASS == '' }}
+        if: ${{ env.ANDROID_KEYSTORE_PASS == '' && !inputs.apk-only }}
         working-directory: build
         run: |
           json=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest)

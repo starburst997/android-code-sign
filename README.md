@@ -163,7 +163,7 @@ We can now add all the necessary secrets to our repository:
 
 <br/>
 
-## Build .AAB (or .APK)
+## Build .aab
 
 Before you can upload your app via [fastlane](https://docs.fastlane.tools/actions/supply/), you need to manually submit your app once (see [fastlane/fastlane#14686](https://github.com/fastlane/fastlane/issues/14686)).
 
@@ -183,13 +183,13 @@ The [android folder](https://github.com/starburst997/android-code-sign/tree/main
 ## Create app in Google Play Console
 
 <table align="center"><tr><td>
-<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-01.png" alt="Create Google Project" title="Create Google Project"/></a><p align="center">1</p>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-01.png" alt="Create App" title="Create App"/></a><p align="center">1</p>
 </td><td>
-<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-02.png" alt="Enable Google Play Developer API" title="Enable Google Play Developer API"/></a><p align="center">2</p>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-02.png" alt="Fill form" title="Fill form"/></a><p align="center">2</p>
 </td><td>
-<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-03.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-03.png" alt="Select your project" title="Select your project" /></a><p align="center">3</p>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-03.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-03.png" alt="Create new release" title="Create new release" /></a><p align="center">3</p>
 </td><td>
-<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-04.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-04.png" alt="Create a new Service Account" title="Create a new Service Account" /></a><p align="center">4</p>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-04.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-04.png" alt="Upload .aab" title="Upload .aab" /></a><p align="center">4</p>
 </td></tr></table>
 
 1. Open the [Google Play Console](https://play.google.com/console/?hl=en) and click **Create app**.
@@ -198,7 +198,115 @@ The [android folder](https://github.com/starburst997/android-code-sign/tree/main
 
 3. In the **Test and release** section, select **testing** and then **Internal testing**.Click **Create new release**.
 
-4. Drag and drop your **.AAB**, enter release name and notes. Click **Save and publish**
+4. Drag and drop your **.aab**, enter release name and notes. Click **Save and publish**
 
 <br/>
+
+## Create Fastfiles
+
+#### fastlane/Appfile
+```ruby
+for_platform :android do
+  package_name(ENV["ANDROID_PACKAGE_NAME"])
+  json_key_file(ENV["GOOGLE_PLAY_KEY_FILE_PATH"])
+end
+```
+
+#### fastlane/Fastfile
+```ruby
+org, repo = (ENV["GITHUB_REPOSITORY"]||"").split("/")
+match_org, match_repo = (ENV["MATCH_REPOSITORY"]||"").split("/")
+
+platform :android do
+  desc "Upload a new Android version to the production Google Play Store"
+  lane :production do
+    upload_to_play_store(track: 'production', release_status: 'completed', aab: "#{ENV['ANDROID_BUILD_FILE_PATH']}")
+  end
+
+  desc "Upload a new Android internal version to Google Play"
+  lane :internal do
+    upload_to_play_store(track: 'internal', release_status: 'completed', aab: "#{ENV['ANDROID_BUILD_FILE_PATH']}")
+  end
+end
+```
+
+<br/>
+
+## Create workflows
+
+By using `workflow_call` we can simplify the workflow file by referencing an external one, but feel free to copy the original instead to fit your pipeline better.
+
+Save those inside the `.github/workflows` directory of your repository.
+
+#### android.yml ([original](https://github.com/starburst997/android-code-sign/blob/v1/.github/workflows/android.yml))
+```yml
+name: Build Android
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: starburst997/apple-code-sign/.github/workflows/android.yml@v1
+    secrets: inherit
+    with:
+      path: 'android'
+      module: 'app'
+```
+
+#### publish_android.yml ([original](https://github.com/starburst997/android-code-sign/blob/v1/.github/workflows/publish_android.yml))
+```yml
+name: Publish Android
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: starburst997/apple-code-sign/.github/workflows/publish_android.yml@v1
+    secrets: inherit
+```
+
+#### keystore.yml ([original](https://github.com/starburst997/android-code-sign/blob/v1/.github/workflows/keystore.yml))
+```yml
+name: Generate .keystore
+
+on:
+  workflow_dispatch:
+    inputs:
+      alias:
+        type: string
+        description: Alias (anything you want)
+      password:
+        type: string
+        description: Password
+      name:
+        type: string
+        description: Your Name
+      organization:
+        type: string
+        description: Organization Name
+      locality:
+        type: string
+        description: Locality / City
+      state:
+        type: string
+        description: State / Province
+      country:
+        type: string
+        description: Country (2 letter code)
+
+jobs:
+  setup:
+    uses: starburst997/android-code-sign/.github/workflows/keystore.yml@v1
+    secrets: inherit
+    with:
+      alias: ${{ inputs.alias }}
+      password: ${{ inputs.password }}
+      name: ${{ inputs.name }}
+      organization: ${{ inputs.organization }}
+      locality: ${{ inputs.locality }}
+      state: ${{ inputs.state }}
+      country: ${{ inputs.country }}
+```
 
