@@ -31,7 +31,7 @@ jobs:
         continue-on-error: true
         working-directory: ${{ env.path }}/${{ env.module }}
         run: |
-          sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ env.package_name }}\"/" build.gradle.kts
+          sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ secrets.ANDROID_PACKAGE_NAME }}\"/" build.gradle.kts
 
       #- name: Build APK
       #  working-directory: ${{ env.path }}
@@ -46,18 +46,53 @@ jobs:
           mkdir build
           find "${{ env.path }}/${{ env.module }}/build/outputs/bundle/release" -name '*.aab' -exec mv '{}' build/android.aab \;
 
-      - name: Sign AAB
+      - name: Save .keystore
         working-directory: build
         run: |
-          echo "Signing .AAB"
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > .keystore
 
-          ls -la
-          
+      # Convert PKCS12 keystore to JKS (if possible)
+      - name: Convert keystore
+        continue-on-error: true
+        working-directory: build
+        run: |
+          keytool -importkeystore -srckeystore .keystore -destkeystore keystore.jks -srcstoretype PKCS12 \
+          -deststoretype jks -srcstorepass ${{ secrets.ANDROID_KEYSTORE_PASS }} -deststorepass ${{ secrets.ANDROID_KEYSTORE_PASS }} \
+          -srcalias ${{ secrets.ANDROID_KEYALIAS_NAME }} -destalias ${{ secrets.ANDROID_KEYALIAS_NAME }} \
+          -srckeypass ${{ secrets.ANDROID_KEYALIAS_PASS }} -destkeypass ${{ secrets.ANDROID_KEYALIAS_PASS }}
+          rm .keystore
+          mv keystore.jks .keystore
+
+      - name: Unsign and Sign AAB
+        working-directory: build
+        run: |
+          zip -d android.aab META-INF/\*
           jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore .keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
+          -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
           "android.aab" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
 
+      # Download bundletool to generate a .APK from the .AAB for external distribution
+      - name: Generate .APK
+        working-directory: build
+        run: |
+          json=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest)
+          downloadUrl=$(echo $json | jq -r ".assets | .[].browser_download_url")
+          curl $downloadUrl -4 -sL -o 'bundletool.jar'
+
+          java -jar bundletool.jar build-apks --bundle=android.aab --output=android.apks \
+          --mode=universal \
+          --ks=.keystore \
+          --ks-pass=${{ secrets.ANDROID_KEYALIAS_PASS }} \
+          --ks-key-alias=${{ secrets.ANDROID_KEYALIAS_NAME }} \
+          --key-pass=${{ secrets.ANDROID_KEYSTORE_PASS }}
+
+          unzip -p android.apks universal.apk > android.apk
+          rm android.apks
+          rm bundletool.jar
+
+      - name: Cleanup
+        working-directory: build
+        run: |
           rm .keystore
 
       - name: Upload Artifacts
