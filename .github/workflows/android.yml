@@ -99,8 +99,17 @@ jobs:
           --key-pass="pass:${{ secrets.ANDROID_KEYSTORE_PASS }}"
 
           unzip -p android.apks universal.apk > android.apk
+
           rm android.apks
           rm bundletool.jar
+
+      - name: Sign APK
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        working-directory: build
+        run: |
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore .keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
+          "android.apk" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
 
       - name: Generate .APK (unsigned)
         if: ${{ env.ANDROID_KEYSTORE_PASS == '' }}
