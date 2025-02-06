@@ -15,6 +15,9 @@ on:
         required: true
         default: 'app'
         type: string
+      version:
+        default: '1.0'
+        type: string
       java-version:
         default: '21'
         type: string
@@ -50,6 +53,30 @@ jobs:
         working-directory: ${{ inputs.path }}/${{ inputs.module }}
         run: |
           sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ secrets.ANDROID_PACKAGE_NAME }}\"/" build.gradle.kts
+
+      - name: Increment ANDROID_BUILD_NUMBER locally
+        id: versions
+        env:
+          BUILD_NUMBER: ${{ vars.ANDROID_BUILD_NUMBER }}
+        run: |
+          echo "build_number=$(($BUILD_NUMBER+1))" >> $GITHUB_OUTPUT
+          echo "BUILD_NUMBER=$(($BUILD_NUMBER+1))" >> $GITHUB_ENV
+      - run: echo "BUILD_NUMBER is now $BUILD_NUMBER"
+
+      - name: Increment Version
+        uses: starburst997/increment@v2
+        with:
+          name: 'ANDROID_BUILD_NUMBER'
+          amount: 1
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Change version
+        continue-on-error: true
+        working-directory: ${{ inputs.path }}/${{ inputs.module }}
+        run: |
+          sed -i -E "s/versionCode = [^\n]+$/versionCode = ${{ env.BUILD_NUMBER }}/" build.gradle.kts
+          sed -i -E "s/versionName = [^\n]+$/versionName = \"${{ inputs.version }}.${{ env.BUILD_NUMBER }}\"/" build.gradle.kts
+          cat build.gradle.kts
 
       - name: Build APK
         if: ${{ inputs.apk-only }}
