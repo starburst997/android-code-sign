@@ -294,6 +294,8 @@ jobs:
   publish:
     uses: starburst997/android-code-sign/.github/workflows/publish_android.yml@v1
     secrets: inherit
+    with:
+      lane: 'internal'
 ```
 
 #### keystore.yml ([original](https://github.com/starburst997/android-code-sign/blob/v1/.github/workflows/keystore.yml))

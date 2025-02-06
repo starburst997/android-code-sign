@@ -1,0 +1,15 @@
+name: Publish Android
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/android.yml
+    secrets: inherit
+
+  publish:
+    uses: starburst997/android-code-sign/.github/workflows/publish_android.yml@v1
+    secrets: inherit
+    with:
+      lane: 'internal'
