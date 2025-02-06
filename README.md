@@ -2,7 +2,7 @@
 
 Sample project to code-sign and publish an Android App to the Play Store.
 
-The following text is a copy of my blog post: [**Code Signing for Android via Github Action**](https://jd.boiv.in/post/2025/02/05/code-signing-android.html).
+The following text is a copy of my blog post: [**Code Signing for Android via Github Action**](https://jd.boiv.in/post/2025/02/05/android-publish.html).
 
 **TL;DR**: By using [fastlane supply](https://docs.fastlane.tools/actions/supply/) and [Github Action](https://github.com/features/actions) we can compile and publish a code-signed Android app on the Play Store.
 
