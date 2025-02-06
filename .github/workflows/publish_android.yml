@@ -1,13 +1,51 @@
 name: Publish Android
 
+on:
+  workflow_call:
+    inputs:
+      lane:
+        required: true
+        default: 'internal'
+        type: string
+
 # Expect an artifact named "build-android" (android.aab)
 jobs:
   build:
     name: Publish Android
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
+      GOOGLE_PLAY_KEY_FILE_PATH:
+        ${{ format('{0}/fastlane/google-fastlane.json', github.workspace) }}
+      ANDROID_BUILD_FILE_PATH: ${{ format('{0}/build/android.aab', github.workspace) }}
+      ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Test
-        run: |
-          echo "LOL"
+      - name: Download Android Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-android
+          path: build
+
+      - name: Add Authentication
+        run: echo "$GOOGLE_PLAY_KEY_FILE" > $GOOGLE_PLAY_KEY_FILE_PATH
+
+      - name: Set up Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+
+      - name: Upload to Google Play Internal
+        uses: starburst997/fastlane-action@v3.0.0
+        with:
+          lane: 'android ${{ inputs.lane }}'
+
+      - name: Cleanup to avoid storage limit
+        if: always()
+        uses: starburst997/delete-artifact@v5
+        with:
+          name: build-android
