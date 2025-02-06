@@ -94,9 +94,9 @@ jobs:
           java -jar bundletool.jar build-apks --bundle=android.aab --output=android.apks \
           --mode=universal \
           --ks=.keystore \
-          --ks-pass=${{ secrets.ANDROID_KEYALIAS_PASS }} \
+          --ks-pass="pass:${{ secrets.ANDROID_KEYALIAS_PASS }}" \
           --ks-key-alias=${{ secrets.ANDROID_KEYALIAS_NAME }} \
-          --key-pass=${{ secrets.ANDROID_KEYSTORE_PASS }}
+          --key-pass="pass:${{ secrets.ANDROID_KEYSTORE_PASS }}"
 
           unzip -p android.apks universal.apk > android.apk
           rm android.apks
