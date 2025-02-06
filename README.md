@@ -271,7 +271,7 @@ on:
 
 jobs:
   build:
-    uses: starburst997/apple-code-sign/.github/workflows/android.yml@v1
+    uses: starburst997/android-code-sign/.github/workflows/android.yml@v1
     secrets: inherit
     with:
       path: 'android'
@@ -292,7 +292,7 @@ jobs:
     secrets: inherit
 
   publish:
-    uses: starburst997/apple-code-sign/.github/workflows/publish_android.yml@v1
+    uses: starburst997/android-code-sign/.github/workflows/publish_android.yml@v1
     secrets: inherit
 ```
 
