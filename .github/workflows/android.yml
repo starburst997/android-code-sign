@@ -124,14 +124,14 @@ jobs:
         continue-on-error: true
         working-directory: build
         run: |
-          zip -d android.aab META-INF/\*
+          zip -d android.aab META-INF/\* || true
           
       - name: Unsign APK
         if: ${{ env.ANDROID_KEYSTORE_PASS != '' && inputs.apk-only }}
         continue-on-error: true
         working-directory: build
         run: |
-          zip -d android.apk META-INF/\*
+          zip -d android.apk META-INF/\* || true
 
       - name: Sign AAB
         if: ${{ env.ANDROID_KEYSTORE_PASS != '' && !inputs.apk-only }}
