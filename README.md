@@ -293,6 +293,7 @@ jobs:
 
   publish:
     uses: starburst997/android-code-sign/.github/workflows/publish_android.yml@v1
+    needs: [build]
     secrets: inherit
     with:
       lane: 'internal'
