@@ -67,11 +67,17 @@ jobs:
           rm .keystore
           mv keystore.jks .keystore
 
-      - name: Unsign and Sign AAB
+      - name: Unsign AAB
         if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        continue-on-error: true
         working-directory: build
         run: |
           zip -d android.aab META-INF/\*
+
+      - name: Sign AAB
+        if: ${{ env.ANDROID_KEYSTORE_PASS != '' }}
+        working-directory: build
+        run: |
           jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
           -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
           "android.aab" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
