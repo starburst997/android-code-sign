@@ -1,6 +1,6 @@
 # android-code-sign
 
-Sample project to code-sign and publish an Android App to the Play Store via Github Action
+Sample project to code-sign and publish an Android App to the Play Store.
 
 The following text is a copy of my blog post: [**Code Signing for Android via Github Action**](https://jd.boiv.in/post/2025/02/05/code-signing-android.html).
 
@@ -143,6 +143,8 @@ base64 .keystore
 ```
 
 I've also created a [Github Action](https://github.com/starburst997/android-publish/blob/main/.github/workflows/keystore.yml) that you can run in this repository called: **Generate .keystore**. It will also generate the **base64** version available in the artifact (don't forget to **delete** the artifact afterward!).
+
+Either the PKCS12 or JKS variant will works.
 
 <br/>
 
