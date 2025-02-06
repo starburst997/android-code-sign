@@ -350,6 +350,8 @@ Notice that we need to specify the project's path, module and version.
 
 Now you can call the **Publish Android** action and you should see a new build appears in your internal test lane.
 
+Makes sure your app has been **reviewed** by filling all the necessary steps in [Google Play Console](https://play.google.com/console/?hl=en), otherwise you'll get an error: `Only releases with status draft may be created on draft app.`
+
 The workflow will also automatically increment the build number and save it as a variable in the repository.
 
 I've also included a [release workflow](https://github.com/starburst997/android-code-sign/blob/main/.github/workflows/release.yml) as an example.
