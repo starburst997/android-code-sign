@@ -167,5 +167,38 @@ We can now add all the necessary secrets to our repository:
 
 Before you can upload your app via [fastlane](https://docs.fastlane.tools/actions/supply/), you need to manually submit your app once (see [fastlane/fastlane#14686](https://github.com/fastlane/fastlane/issues/14686)).
 
-**Build** your app using the Github Action (**Build Android**) and **download** the artifact. The [android folder](https://github.com/starburst997/android-code-sign/tree/main/android) contains a simple "Hello World" project.
+The [android folder](https://github.com/starburst997/android-code-sign/tree/main/android) contains a simple "Hello World" project.
+
+<table align="center"><tr><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/action-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/action-01.png" alt="Run Build action" title="Run Build action" /></a><p align="center">1</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/action-02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/action-02.png" alt="Download artifact" title="Download artifact"/></a><p align="center">2</p>
+</td></tr></table>
+
+1. **Build** your app using the Github Action (**Build Android**). Go to the **Actions** tab and click **Run Workflow**.
+2. **Download** the artifact once the action is done.
+
+<br/>
+
+## Create app in Google Play Console
+
+<table align="center"><tr><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-01.png" alt="Create Google Project" title="Create Google Project"/></a><p align="center">1</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-02.png" alt="Enable Google Play Developer API" title="Enable Google Play Developer API"/></a><p align="center">2</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-03.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-03.png" alt="Select your project" title="Select your project" /></a><p align="center">3</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/create-app-04.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-05-android-publish/small/create-app-04.png" alt="Create a new Service Account" title="Create a new Service Account" /></a><p align="center">4</p>
+</td></tr></table>
+
+1. Open the [Google Play Console](https://play.google.com/console/?hl=en) and click **Create app**.
+
+2. Fill out the form and click **Create app**.
+
+3. In the **Test and release** section, select **testing** and then **Internal testing**.Click **Create new release**.
+
+4. Drag and drop your **.AAB**, enter release name and notes. Click **Save and publish**
+
+<br/>
 
