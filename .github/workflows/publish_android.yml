@@ -7,6 +7,9 @@ on:
         required: true
         default: 'internal'
         type: string
+      keep-artifact:
+        default: false
+        type: boolean
 
 # Expect an artifact named "build-android" (android.aab)
 jobs:
@@ -25,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Android Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-android
           path: build
@@ -45,7 +48,7 @@ jobs:
           lane: 'android ${{ inputs.lane }}'
 
       - name: Cleanup to avoid storage limit
-        if: always()
+        if: always() && !inputs.keep-artifact
         uses: starburst997/delete-artifact@v5
         with:
           name: build-android
