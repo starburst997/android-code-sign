@@ -79,7 +79,7 @@ jobs:
         working-directory: build
         run: |
           jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
+          -keystore .keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
           "android.aab" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
 
       # Download bundletool to generate a .APK from the .AAB for external distribution

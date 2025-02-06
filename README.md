@@ -159,5 +159,5 @@ We can now add all the necessary secrets to our repository:
 
 Before you can upload your app via [fastlane](https://docs.fastlane.tools/actions/supply/), you need to manually submit your app once (see [fastlane/fastlane#14686](https://github.com/fastlane/fastlane/issues/14686)).
 
-**Build** your app using the Github Action (**Build Android**) and **download** the artifact.
+**Build** your app using the Github Action (**Build Android**) and **download** the artifact. The [android folder](https://github.com/starburst997/android-code-sign/tree/main/android) contains a simple "Hello World" project.
 
