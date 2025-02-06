@@ -3,7 +3,7 @@ name: Build Android
 env:
   path: android
   module: app
-  bundle_id: jd.boiv.in.test
+  package_name: jd.boiv.in.test
 
 on:
   workflow_dispatch:
@@ -28,9 +28,10 @@ jobs:
 
       # Change bundle id for easy testing of this workflow when used as a template
       - name: Change bundle id
+        continue-on-error: true
         working-directory: ${{ env.path }}/${{ env.module }}
         run: |
-          sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ env.bundle_id }}\"/" build.gradle.kts
+          sed -i -E "s/applicationId = \"jd.boiv.in.test\"/applicationId = \"${{ env.package_name }}\"/" build.gradle.kts
 
       #- name: Build APK
       #  working-directory: ${{ env.path }}
@@ -39,11 +40,25 @@ jobs:
       - name: Build AAB
         working-directory: ${{ env.path }}
         run: ./gradlew bundleRelease
-
+      
       - name: Rename files
         run: |
           mkdir build
           find "${{ env.path }}/${{ env.module }}/build/outputs/bundle/release" -name '*.aab' -exec mv '{}' build/android.aab \;
+
+      - name: Sign AAB
+        working-directory: build
+        run: |
+          echo "Signing .AAB"
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > .keystore
+
+          ls -la
+          
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore .keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASS }}" -keypass "${{ secrets.ANDROID_KEYALIAS_PASS }}" \
+          "android.aab" "${{ secrets.ANDROID_KEYALIAS_NAME }}"
+
+          rm .keystore
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

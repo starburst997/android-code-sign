@@ -142,4 +142,18 @@ I've also created a [Github Action](https://github.com/starburst997/android-publ
 
 ## Save secrets
 
-Blablabla
+We can now add all the necessary secrets to our repository:
+
+- `GOOGLE_PLAY_KEY_FILE`: The **JSON** file content from the **Service Account**.
+- `ANDROID_KEYALIAS_NAME`: The **alias** used for the **.keystore**.
+- `ANDROID_KEYSTORE_PASS`: The **password** used for the **.keystore**.
+- `ANDROID_KEYALIAS_PASS`: The **password** used for the **.keystore** (same as above).
+- `ANDROID_KEYSTORE_BASE64`: The **base64** value of the **.keystore** file.
+- `ANDROID_PACKAGE_NAME`: The package name of your app.
+
+## Build .AAB (or .APK)
+
+Before you can upload your app via [fastlane](https://docs.fastlane.tools/actions/supply/), you need to manually submit your app once (see [fastlane/fastlane#14686](https://github.com/fastlane/fastlane/issues/14686)).
+
+Build your app using the Github Action, download the artifact.
+
