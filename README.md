@@ -1,4 +1,4 @@
-# android-publish
+# android-code-sign
 
 Sample project to publish an Android App to the Play Store using Github Action
 
