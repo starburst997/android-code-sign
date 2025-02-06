@@ -330,6 +330,7 @@ on:
 jobs:
   setup:
     uses: starburst997/android-code-sign/.github/workflows/keystore.yml@v1
+    needs: [build]
     secrets: inherit
     with:
       alias: ${{ inputs.alias }}
