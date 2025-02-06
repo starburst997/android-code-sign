@@ -1,0 +1,13 @@
+name: Publish Android
+
+# Expect an artifact named "build-android" (android.aab)
+jobs:
+  build:
+    name: Publish Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: |
+          echo "LOL"
