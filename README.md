@@ -232,6 +232,30 @@ end
 
 <br/>
 
+## Generate a Personal Access Token (PAT)
+
+<table align="center"><tr><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-02-code-signing-apple/pat_01.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-02-code-signing-apple/small/pat_01.png" alt="Generate New Token (Classic)" title="Generate New Token (Classic)" /></a><p align="center">1</p>
+</td><td>
+<a href="https://jd.boiv.in/assets/posts/2025-02-02-code-signing-apple/pat_02.png" target="_blank"><img src="https://jd.boiv.in/assets/posts/2025-02-02-code-signing-apple/small/pat_02.png" alt="Use repo score" title="Use repo score"/></a><p align="center">2</p>
+</td></tr></table>
+
+We also need to generate a **Personal Access Token** for Github. 
+
+This will enables us to increment a build number after each build.
+
+1. Visit your [settings page](https://github.com/settings/tokens) and click on **Generate new token** and select **Generate new token (classic)**.
+
+2. We need all the **repo** scope enabled. Set **no expiration**. Click **Generate token** and save the value.
+
+### Save secrets
+
+Save this secret in the github repository for your project:
+
+- `GH_PAT`: The value of your newly generated token
+
+<br/>
+
 ## Create workflows
 
 By using `workflow_call` we can simplify the workflow file by referencing an external one, but feel free to copy the original instead to fit your pipeline better.
@@ -252,6 +276,7 @@ jobs:
     with:
       path: 'android'
       module: 'app'
+      version: '1.0'
 ```
 
 #### publish_android.yml ([original](https://github.com/starburst997/android-code-sign/blob/v1/.github/workflows/publish_android.yml))
@@ -263,6 +288,10 @@ on:
 
 jobs:
   build:
+    uses: ./.github/workflows/android.yml
+    secrets: inherit
+
+  publish:
     uses: starburst997/apple-code-sign/.github/workflows/publish_android.yml@v1
     secrets: inherit
 ```
@@ -310,3 +339,16 @@ jobs:
       country: ${{ inputs.country }}
 ```
 
+Notice that we need to specify the project's path, module and version.
+
+<br/>
+
+## Publish an update
+
+Now you can call the **Publish Android** action and you should see a new build appears in your internal test lane.
+
+The workflow will also automatically increment the build number and save it as a variable in the repository.
+
+I've also included a [release workflow](https://github.com/starburst997/android-code-sign/blob/main/.github/workflows/release.yml) as an example.
+
+<br/>
