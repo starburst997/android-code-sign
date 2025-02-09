@@ -64,6 +64,7 @@ jobs:
         working-directory: build
         run: |
           mv android.apk Test.apk
+          rm android.aab
 
       - name: Release
         uses: starburst997/release-action@v1
