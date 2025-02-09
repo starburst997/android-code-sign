@@ -46,11 +46,6 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
       
-      - name: Tag release
-        run: |
-          git tag v${{ needs.version.outputs.version }}
-          git push origin --tags
-
       - name: Generate Changelog
         if: ${{ inputs.notes != '' }}
         run: echo "${{ inputs.notes }}" > RELEASE.txt
@@ -71,13 +66,14 @@ jobs:
           mv android.apk Test.apk
 
       - name: Release
-        uses: starburst997/action-gh-release@v2
+        uses: starburst997/release-action@v1
         with:
-          body_path: RELEASE.txt
+          bodyFile: RELEASE.txt
           token: ${{ secrets.GH_PAT }}
-          tag_name: v${{ needs.version.outputs.version }}
-          files: |
-            build/Test.apk
+          tag: v${{ needs.version.outputs.version }}
+          replacesArtifacts: true
+          allowUpdates: true
+          artifacts: "build/*"
 
       - name: Cleanup to avoid storage limit
         if: always()
